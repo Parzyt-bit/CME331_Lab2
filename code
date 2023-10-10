@@ -1,3 +1,6 @@
+
+
+
 #include <stdint.h>
 
 #define SYSCTL_RCGC2     (* ((volatile unsigned long *) 0x400FE108))  // 0x400FE108 is a 'memory address' of a register that has particular function in the 'microcontroller'
@@ -94,30 +97,17 @@ void DELAY (void)
 // Non-blocking delay function
 void t_delay(uint8_t color)
 {
-//    if ((GPIO_PORTF_DATA & 0x01) == 0)
-//    {
-//        GPIO_PORTF_DATA |= color;
-//
-//        while (1)    // SW2 is not pressed
-//        {
-//            GPIO_PORTF_DATA |= color;
-//            if ((GPIO_PORTF_DATA & 0x01) == 0)
-//            {
-//               break;
-//            }
-//
-//       }
-//   }
+
      if (TIMER0_TAV >= 0x7A1200)
     {
-        GPIO_PORTF_DATA ^= color;
-        TIMER0_TAV = 0;
+
         if ((GPIO_PORTF_DATA & 0x01) == 0)
         {
             GPIO_PORTF_DATA |= color;
 
             while (1)    // SW2 is not pressed
             {
+
                 GPIO_PORTF_DATA |= color;
                 if ((GPIO_PORTF_DATA & 0x01) == 0)
                 {
@@ -125,10 +115,17 @@ void t_delay(uint8_t color)
                 }
 
             }
+
         }
+        TIMER0_TAV = 0;
+        GPIO_PORTF_DATA ^= color;
+
+
     }
 
+
 }
+
 
 
 int main(void)
@@ -143,19 +140,19 @@ int main(void)
 
         while (1)
         {
-            if (((GPIO_PORTF_DATA & 0x10) == 0x10) && ((GPIO_PORTF_DATA & 0x01) == 0x01) )
+            if (((GPIO_PORTF_DATA & 0x10) == 0x10) && ((GPIO_PORTF_DATA & 0x01) == 0x01) )  // Both SW1 and SW2 are not pressed
             {
                 t_delay(0x02);
 
             }
-            else if ((GPIO_PORTF_DATA & 0x01) == 0)
+            else if ((GPIO_PORTF_DATA & 0x01) == 0)      // When SW2 is pressed
             {
                 GPIO_PORTF_DATA |= 0x02;
 
-                while (1)    // SW2 is not pressed
+                while (1)    // Keep the LED switched ON
                 {
                     GPIO_PORTF_DATA |= 0x02;
-                    if ((GPIO_PORTF_DATA & 0x01) == 0)
+                    if ((GPIO_PORTF_DATA & 0x01) == 0)      // Break the loop when SW2 is pressed
                     {
                        break;
                     }
@@ -163,7 +160,7 @@ int main(void)
                 }
 
             }
-            else if((GPIO_PORTF_DATA & 0x10) == 0)      // break the loop (change LED color) only when SW1 is pressed
+            else if ((GPIO_PORTF_DATA & 0x10) == 0)    // break the loop (change LED color) only when SW1 is pressed
             {
                 break;
             }
@@ -185,6 +182,7 @@ int main(void)
                 GPIO_PORTF_DATA |= 0x04;
                 while ((GPIO_PORTF_DATA & 0x01) == 0x01)
                 {
+                    GPIO_PORTF_DATA |= 0x04;
 
                 }
             }
@@ -211,6 +209,7 @@ int main(void)
                 GPIO_PORTF_DATA |= 0x08;
                 while ((GPIO_PORTF_DATA & 0x01) == 0x01)
                 {
+                    GPIO_PORTF_DATA |= 0x08;
 
                 }
             }
