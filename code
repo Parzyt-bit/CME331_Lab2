@@ -115,6 +115,25 @@ void t_delay(uint8_t color)
     }
 }
 
+void blink(uint8_t color)                       // color is the hexadecimal value of a specific LED (e.g., red = 0x02, blue = 0x04, green = 0x08)
+{
+    while (1)
+    {
+        if ((GPIO_PORTF_DATA & 0x1) == 0x1)
+        {
+            t_delay(color);
+
+        }
+        else
+        {
+            break;
+        }
+
+    }
+}
+
+
+
 
 
 int main(void)
@@ -124,55 +143,28 @@ int main(void)
     unlock_SW2();
     while (1)
     {
+        GPIO_PORTF_DATA &= ~0x02;
         GPIO_PORTF_DATA &= ~0x04;
         GPIO_PORTF_DATA &= ~0x08;
 
-        while (1)
-        {
-            if ((GPIO_PORTF_DATA & 0x1) == 0x1)
-            {
-                t_delay(0x02);
+        blink(0x02);
+        DELAY();
 
-            }
-            else
-            {
-                break;
-            }
-
-
-        }
-        DELAY ();
-        GPIO_PORTF_DATA &= ~0x02;
-        GPIO_PORTF_DATA &= ~0x08;
-        while (1)
-        {
-            if ((GPIO_PORTF_DATA & 0x1) == 0x1)
-            {
-                t_delay(0x04);
-
-            }
-            else
-            {
-                break;
-            }
-        }
-        DELAY ();
 
         GPIO_PORTF_DATA &= ~0x02;
         GPIO_PORTF_DATA &= ~0x04;
-        while (1)
-        {
-            if ((GPIO_PORTF_DATA & 0x1) == 0x1)
-            {
-                t_delay(0x08);
+        GPIO_PORTF_DATA &= ~0x08;
 
-            }
-            else
-            {
-                break;
-            }
-        }
-        DELAY ();
+        blink(0x04);
+        DELAY();
+
+        GPIO_PORTF_DATA &= ~0x02;
+        GPIO_PORTF_DATA &= ~0x04;
+        GPIO_PORTF_DATA &= ~0x08;
+
+        blink(0x08);
+        DELAY();
+
 
 
     }
