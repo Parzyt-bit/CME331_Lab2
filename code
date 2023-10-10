@@ -77,23 +77,7 @@ void gpio_portf_init(void)
     GPIO_PORTF_AFSEL &= ~0x10; // disable alternate functions for PF4
     GPIO_PORTF_PUR |= 0x10;
 }
-void delay (void)
-{
 
-    int i = 0;
-    while (i <= 800000)
-    {
-        if ((GPIO_PORTF_DATA & 0x1) == 0x1)   // Switch is not pressed
-        {
-            i = i + 1;
-        }
-        else                        // Switch is pressed
-        {
-            break;
-        }
-
-    }
-}
 
 void DELAY (void)
 {
@@ -115,25 +99,6 @@ void t_delay(uint8_t color)
     }
 }
 
-void blink(uint8_t color)                       // color is the hexadecimal value of a specific LED (e.g., red = 0x02, blue = 0x04, green = 0x08)
-{
-    while (1)
-    {
-        if ((GPIO_PORTF_DATA & 0x1) == 0x1)
-        {
-            t_delay(color);
-
-        }
-        else
-        {
-            break;
-        }
-
-    }
-}
-
-
-
 
 
 int main(void)
@@ -143,28 +108,55 @@ int main(void)
     unlock_SW2();
     while (1)
     {
-        GPIO_PORTF_DATA &= ~0x02;
         GPIO_PORTF_DATA &= ~0x04;
         GPIO_PORTF_DATA &= ~0x08;
 
-        blink(0x02);
-        DELAY();
+        while (1)
+        {
+            if ((GPIO_PORTF_DATA & 0x1) == 0x1)
+            {
+                t_delay(0x02);
 
+            }
+            else
+            {
+                break;
+            }
+
+
+        }
+        DELAY ();
+        GPIO_PORTF_DATA &= ~0x02;
+        GPIO_PORTF_DATA &= ~0x08;
+        while (1)
+        {
+            if ((GPIO_PORTF_DATA & 0x1) == 0x1)
+            {
+                t_delay(0x04);
+
+            }
+            else
+            {
+                break;
+            }
+        }
+        DELAY ();
 
         GPIO_PORTF_DATA &= ~0x02;
         GPIO_PORTF_DATA &= ~0x04;
-        GPIO_PORTF_DATA &= ~0x08;
+        while (1)
+        {
+            if ((GPIO_PORTF_DATA & 0x1) == 0x1)
+            {
+                t_delay(0x08);
 
-        blink(0x04);
-        DELAY();
-
-        GPIO_PORTF_DATA &= ~0x02;
-        GPIO_PORTF_DATA &= ~0x04;
-        GPIO_PORTF_DATA &= ~0x08;
-
-        blink(0x08);
-        DELAY();
-
+            }
+            else
+            {
+                break;
+            }
+        }
+        DELAY ();
 
 
     }
