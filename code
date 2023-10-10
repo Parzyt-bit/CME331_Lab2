@@ -81,10 +81,11 @@ void gpio_portf_init(void)
 
 void DELAY (void)
 {
-    int i = 0;
-    while (i <= 800000)
+    TIMER0_TAV = 0;
+
+    while (TIMER0_TAV <=0x7A1200)
     {
-        i = i + 1;
+        // Wait until the timer has reached the max value, i.e., 0x7A1200
     }
 
 }
