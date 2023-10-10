@@ -103,6 +103,15 @@ void DELAY (void)
     }
 
 }
+
+void t_delay(void)
+{
+    if (TIMER0_TAV >= 0x7A1200)
+    {
+        GPIO_PORTF_DATA ^= 0x02;
+        TIMER0_TAV = 0;
+    }
+}
 int main(void)
 {
     init_timer0();
@@ -117,11 +126,8 @@ int main(void)
         {
             if ((GPIO_PORTF_DATA & 0x1) == 0x1)
             {
-                if (TIMER0_TAV >= 0x7A1200)
-                {
-                    GPIO_PORTF_DATA ^= 0x02;
-                    TIMER0_TAV = 0;
-                }
+                t_delay();
+
             }
             else
             {
