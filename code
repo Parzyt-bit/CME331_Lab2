@@ -1,4 +1,9 @@
-
+/*
+ * Name: Prithvi Singh Mann
+ * NSID: qpd572
+ * Course: CME 331
+ * Partner: Tyler Kallio (twk058) --> Only certain parts were worked together
+ */
 
 
 #include <stdint.h>
@@ -10,7 +15,11 @@
 #define GPIO_PORTF_DATA  (* ((volatile unsigned long *) 0x400253FC))
 #define GPIO_PORTF_PUR   (* ((volatile unsigned long *) 0x40025510))
 
-// Procedure for lab 2
+/*
+ * Procedure for lab 2
+ */
+
+// Defining the registers to set up the Timer0 (16/32-bit)
 #define SYSCTL_RCGCTIMER   (* ((volatile unsigned long *) 0x400FE604)) // Pg. 338, Enables/Disables 16/32-bit timer modules in Run mode
 #define TIMER0_CTL         (* ((volatile unsigned long *) 0x4003000C)) // Pg. 737, Used alongside GPTMCFG and GMTMTnMR, to fine-tune timer configurations, and to enable other features
 #define TIMER0_CFG         (* ((volatile unsigned long *) 0x40030000)) // Pg, 727, Value written to it determines whether GPTM is in 32/64-bit or 16/32-bit mode
@@ -78,7 +87,7 @@ void gpio_portf_init(void)
     GPIO_PORTF_DEN |= 0x10;  // set PF4 to be a digital pin
     GPIO_PORTF_DIR &= ~0x10; // set PF4 to be an output pin
     GPIO_PORTF_AFSEL &= ~0x10; // disable alternate functions for PF4
-    GPIO_PORTF_PUR |= 0x10;
+    GPIO_PORTF_PUR |= 0x10;  // enable pullup register for PF4
 }
 
 
@@ -101,7 +110,7 @@ void t_delay(uint8_t color)
      if (TIMER0_TAV >= 0x7A1200)
     {
 
-        if ((GPIO_PORTF_DATA & 0x01) == 0)
+        if ((GPIO_PORTF_DATA & 0x01) == 0)  // If switch is pressed while Timer0 is still going [Not fully functional]
         {
             GPIO_PORTF_DATA |= color;
 
@@ -115,10 +124,10 @@ void t_delay(uint8_t color)
                 }
 
             }
-
+ 
         }
-        TIMER0_TAV = 0;
-        GPIO_PORTF_DATA ^= color;
+        TIMER0_TAV = 0;             // Reset the Timer0
+        GPIO_PORTF_DATA ^= color;   // Toggle the appropriate color
 
 
     }
@@ -152,7 +161,7 @@ int main(void)
                 while (1)    // Keep the LED switched ON
                 {
                     GPIO_PORTF_DATA |= 0x02;
-                    if ((GPIO_PORTF_DATA & 0x01) == 0)      // Break the loop when SW2 is pressed
+                    if ((GPIO_PORTF_DATA & 0x01) == 0)      // Break the loop only when SW2 is pressed
                     {
                        break;
                     }
@@ -172,21 +181,24 @@ int main(void)
         GPIO_PORTF_DATA &= ~0x08;
         while (1)
         {
-            if (((GPIO_PORTF_DATA & 0x10) == 0x10) && ((GPIO_PORTF_DATA & 0x01) == 0x01) )
+            if (((GPIO_PORTF_DATA & 0x10) == 0x10) && ((GPIO_PORTF_DATA & 0x01) == 0x01) )    // Both SW1 and SW2 are not pressed
             {
                 t_delay(0x04);
 
             }
             else if ((GPIO_PORTF_DATA & 0x01) == 0)
             {
-                GPIO_PORTF_DATA |= 0x04;
-                while ((GPIO_PORTF_DATA & 0x01) == 0x01)
+                while (1)    // Keep the LED switched ON
                 {
                     GPIO_PORTF_DATA |= 0x04;
+                    if ((GPIO_PORTF_DATA & 0x01) == 0)      // Break the loop only when SW2 is pressed
+                    {
+                       break;
+                    }
 
                 }
             }
-            else if((GPIO_PORTF_DATA & 0x10) == 0)
+            else if((GPIO_PORTF_DATA & 0x10) == 0)    // break the loop (change LED color) only when SW1 is pressed
             {
                 break;
             }
@@ -206,10 +218,13 @@ int main(void)
             }
             else if ((GPIO_PORTF_DATA & 0x01) == 0)
             {
-                GPIO_PORTF_DATA |= 0x08;
-                while ((GPIO_PORTF_DATA & 0x01) == 0x01)
+                while (1)    // Keep the LED switched ON
                 {
                     GPIO_PORTF_DATA |= 0x08;
+                    if ((GPIO_PORTF_DATA & 0x01) == 0)      // Break the loop only when SW2 is pressed
+                    {
+                       break;
+                    }
 
                 }
             }
