@@ -105,6 +105,7 @@ void DELAY (void)
 }
 int main(void)
 {
+    init_timer0();
     gpio_portf_init();
     unlock_SW2();
     while (1)
@@ -114,12 +115,20 @@ int main(void)
 
         while (1)
         {
-            GPIO_PORTF_DATA ^= 0x02;
-            delay();
-            if ((GPIO_PORTF_DATA & 0x1) == 0)
+            if ((GPIO_PORTF_DATA & 0x1) == 0x1)
+            {
+                if (TIMER0_TAV >= 0x7A1200)
+                {
+                    GPIO_PORTF_DATA ^= 0x02;
+                    TIMER0_TAV = 0;
+                }
+            }
+            else
             {
                 break;
             }
+
+
         }
         DELAY ();
         GPIO_PORTF_DATA &= ~0x02;
