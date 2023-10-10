@@ -81,11 +81,12 @@ void gpio_portf_init(void)
 
 void DELAY (void)
 {
+    // Set the timer to 0
     TIMER0_TAV = 0;
 
     while (TIMER0_TAV <=0x7A1200)
     {
-        // Wait until the timer has reached the max value, i.e., 0x7A1200
+        // Wait until the timer has reached the max value, i.e., 0x7A1200. Then exit the loop, and then the function
     }
 
 }
@@ -93,13 +94,41 @@ void DELAY (void)
 // Non-blocking delay function
 void t_delay(uint8_t color)
 {
-    if (TIMER0_TAV >= 0x7A1200)
+//    if ((GPIO_PORTF_DATA & 0x01) == 0)
+//    {
+//        GPIO_PORTF_DATA |= color;
+//
+//        while (1)    // SW2 is not pressed
+//        {
+//            GPIO_PORTF_DATA |= color;
+//            if ((GPIO_PORTF_DATA & 0x01) == 0)
+//            {
+//               break;
+//            }
+//
+//       }
+//   }
+     if (TIMER0_TAV >= 0x7A1200)
     {
         GPIO_PORTF_DATA ^= color;
         TIMER0_TAV = 0;
-    }
-}
+        if ((GPIO_PORTF_DATA & 0x01) == 0)
+        {
+            GPIO_PORTF_DATA |= color;
 
+            while (1)    // SW2 is not pressed
+            {
+                GPIO_PORTF_DATA |= color;
+                if ((GPIO_PORTF_DATA & 0x01) == 0)
+                {
+                   break;
+                }
+
+            }
+        }
+    }
+
+}
 
 
 int main(void)
@@ -114,12 +143,27 @@ int main(void)
 
         while (1)
         {
-            if ((GPIO_PORTF_DATA & 0x1) == 0x1)
+            if (((GPIO_PORTF_DATA & 0x10) == 0x10) && ((GPIO_PORTF_DATA & 0x01) == 0x01) )
             {
                 t_delay(0x02);
 
             }
-            else
+            else if ((GPIO_PORTF_DATA & 0x01) == 0)
+            {
+                GPIO_PORTF_DATA |= 0x02;
+
+                while (1)    // SW2 is not pressed
+                {
+                    GPIO_PORTF_DATA |= 0x02;
+                    if ((GPIO_PORTF_DATA & 0x01) == 0)
+                    {
+                       break;
+                    }
+
+                }
+
+            }
+            else if((GPIO_PORTF_DATA & 0x10) == 0)      // break the loop (change LED color) only when SW1 is pressed
             {
                 break;
             }
@@ -131,15 +175,25 @@ int main(void)
         GPIO_PORTF_DATA &= ~0x08;
         while (1)
         {
-            if ((GPIO_PORTF_DATA & 0x1) == 0x1)
+            if (((GPIO_PORTF_DATA & 0x10) == 0x10) && ((GPIO_PORTF_DATA & 0x01) == 0x01) )
             {
                 t_delay(0x04);
 
             }
-            else
+            else if ((GPIO_PORTF_DATA & 0x01) == 0)
+            {
+                GPIO_PORTF_DATA |= 0x04;
+                while ((GPIO_PORTF_DATA & 0x01) == 0x01)
+                {
+
+                }
+            }
+            else if((GPIO_PORTF_DATA & 0x10) == 0)
             {
                 break;
             }
+
+
         }
         DELAY ();
 
@@ -147,15 +201,25 @@ int main(void)
         GPIO_PORTF_DATA &= ~0x04;
         while (1)
         {
-            if ((GPIO_PORTF_DATA & 0x1) == 0x1)
+            if (((GPIO_PORTF_DATA & 0x10) == 0x10) && ((GPIO_PORTF_DATA & 0x01) == 0x01) )
             {
                 t_delay(0x08);
 
             }
-            else
+            else if ((GPIO_PORTF_DATA & 0x01) == 0)
+            {
+                GPIO_PORTF_DATA |= 0x08;
+                while ((GPIO_PORTF_DATA & 0x01) == 0x01)
+                {
+
+                }
+            }
+            else if((GPIO_PORTF_DATA & 0x10) == 0)
             {
                 break;
             }
+
+
         }
         DELAY ();
 
