@@ -1,3 +1,4 @@
+#include <stdint.h>
 
 #define SYSCTL_RCGC2     (* ((volatile unsigned long *) 0x400FE108))  // 0x400FE108 is a 'memory address' of a register that has particular function in the 'microcontroller'
 #define GPIO_PORTF_DEN   (* ((volatile unsigned long *) 0x4002551C))
@@ -104,14 +105,18 @@ void DELAY (void)
 
 }
 
-void t_delay(void)
+// Non-blocking delay function
+void t_delay(uint8_t color)
 {
     if (TIMER0_TAV >= 0x7A1200)
     {
-        GPIO_PORTF_DATA ^= 0x02;
+        GPIO_PORTF_DATA ^= color;
         TIMER0_TAV = 0;
     }
 }
+
+
+
 int main(void)
 {
     init_timer0();
@@ -126,7 +131,7 @@ int main(void)
         {
             if ((GPIO_PORTF_DATA & 0x1) == 0x1)
             {
-                t_delay();
+                t_delay(0x02);
 
             }
             else
@@ -141,9 +146,12 @@ int main(void)
         GPIO_PORTF_DATA &= ~0x08;
         while (1)
         {
-            GPIO_PORTF_DATA ^= 0x04;
-            delay();
-            if ((GPIO_PORTF_DATA & 0x1) == 0)
+            if ((GPIO_PORTF_DATA & 0x1) == 0x1)
+            {
+                t_delay(0x04);
+
+            }
+            else
             {
                 break;
             }
@@ -154,9 +162,12 @@ int main(void)
         GPIO_PORTF_DATA &= ~0x04;
         while (1)
         {
-            GPIO_PORTF_DATA ^= 0x08;
-            delay();
-            if ((GPIO_PORTF_DATA & 0x1) == 0)
+            if ((GPIO_PORTF_DATA & 0x1) == 0x1)
+            {
+                t_delay(0x08);
+
+            }
+            else
             {
                 break;
             }
